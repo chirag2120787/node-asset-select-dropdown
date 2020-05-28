@@ -1,9 +1,7 @@
-var express = require('express');
-var router = express.Router();
+import express from 'express';
+import AssetController from './../controller/asset'
+const router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+router.get('/names/:pageIndex&:pageSize&:search?', AssetController.getNames);
 
-module.exports = router;
+export default router;
