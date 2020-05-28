@@ -4,6 +4,7 @@ import cors from 'cors';
 
 import models, { connectDb } from './src/models';
 import assetRouter from './src/routes/asset';
+import randomNameGenerator from './src/service/nameGenerator'
 
 require('dotenv').config();
 
@@ -12,7 +13,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json({ limit: '100mb' }));
 
-app.use('/', assetRouter);
+app.use('', assetRouter);
 
 const eraseDatabaseOnSync = true;
 
@@ -21,7 +22,11 @@ connectDb().then(async() => {
         await Promise.all([
             models.Asset.deleteMany({})
         ]);
-        // createAsset();
+
+        for (let i = 0; i < 1000; i++) {
+            createAsset();
+        }
+
     }
     app.listen(process.env.PORT, () =>
         console.log(`Asset select app listening on port ${process.env.PORT}!`),
@@ -29,11 +34,16 @@ connectDb().then(async() => {
 });
 
 const createAsset = async() => {
+
+    const name = randomNameGenerator();
+
     const asset = new models.Asset({
-        name: 'Asset_2',
+        name: name,
     });
 
-    await asset.save();
+    try {
+        await asset.save();
+    } catch (error) {}
 
 };
 
