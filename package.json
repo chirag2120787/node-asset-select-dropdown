@@ -16,6 +16,7 @@
         "jade": "~1.11.0",
         "mongodb": "^3.5.7",
         "mongoose": "^5.9.16",
-        "morgan": "~1.9.1"
+        "morgan": "~1.9.1",
+        "unique-names-generator": "^4.2.0"
     }
 }
