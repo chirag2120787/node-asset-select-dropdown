@@ -15,7 +15,7 @@ class AssetService {
                     return resolve({ error: '', names: names })
                 });
             } else {
-                assetModel.find({ name: { "$regex": search, "$options": "i" } }, (err, namesData) => {
+                assetModel.find({ name: { "$regex": search, "$options": "i" } }, null, { sort: '-name' }, (err, namesData) => {
                     if (err) {
                         console.log(err)
                         return reject({ error: 'Names could not be fetched', names: '' })
