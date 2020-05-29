@@ -25,16 +25,18 @@ connectDb().then(async() => {
         ]);
 
         for (let i = 0; i < 1000; i++) {
-            createAsset();
+            createAssetAndSave();
         }
 
     }
     app.listen(process.env.PORT, () =>
         console.log(`Asset select app listening on port ${process.env.PORT}!`),
     );
+}).catch(err => {
+    console.log(err)
 });
 
-const createAsset = async() => {
+const createAssetAndSave = async() => {
 
     const name = randomNameGenerator();
 
