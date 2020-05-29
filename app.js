@@ -1,41 +1,51 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+import models, { connectDb } from './src/models';
+import assetRouter from './src/routes/asset';
+import randomNameGenerator from './src/service/nameGenerator'
 
-var app = express();
+require('dotenv').config();
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+const app = express();
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors());
+app.options('*', cors());
+app.use(bodyParser.json({ limit: '100mb' }));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('', assetRouter);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+const eraseDatabaseOnSync = true;
+
+connectDb().then(async() => {
+    if (eraseDatabaseOnSync) {
+        await Promise.all([
+            models.Asset.deleteMany({})
+        ]);
+
+        for (let i = 0; i < 1000; i++) {
+            createAsset();
+        }
+
+    }
+    app.listen(process.env.PORT, () =>
+        console.log(`Asset select app listening on port ${process.env.PORT}!`),
+    );
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+const createAsset = async() => {
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
+    const name = randomNameGenerator();
+
+    const asset = new models.Asset({
+        name: name,
+    });
+
+    try {
+        await asset.save();
+    } catch (error) {}
+
+};
 
 module.exports = app;
